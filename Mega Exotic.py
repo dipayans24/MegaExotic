@@ -513,7 +513,7 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
         st.session_state["TotalFiles"] = TotalFiles
 
         if download:
-            MegaFileName = rf"Mega_{WSDate}.xlsx"
+            MegaFileName = rf"MegaExotic_{WSDate}.xlsx"
              
             requiredData = TotalFiles
 
