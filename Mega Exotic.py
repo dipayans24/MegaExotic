@@ -569,7 +569,7 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
 
 else:
     with st.status("Credentials", expanded=False):
-        col1, col2, col3, col4, col5  = st.columns(5, vertical_alignment = "center",  width="stretch", border = True) 
+        col1, col2, col3, col4, col5  = st.columns(5, vertical_alignment = "center",  width="stretch") 
      
         with col1:
            st.link_button("Open 10xStats", "https://10xstats.com/")
