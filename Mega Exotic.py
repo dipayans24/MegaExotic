@@ -300,7 +300,7 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
 
     FunnelCount = pd.concat([FunnelCount, pd.DataFrame({"Funnel": [Funnel], "Count": [len(ExoticLeads)]})], axis="rows", ignore_index=True) # Update totals
 
-    st.write(f"{Funnel} count = {len(ExoticLeads)}.") # Log size
+    #st.write(f"{Funnel} count = {len(ExoticLeads)}.") # Log size
 
     columns = ["PaymentFunnel" , "Payment Id", "Payment Method", "Amount", "Email", "Phone Number", "Payment Slug", "ExoticSlugs", "Status", "Tags", "CreatedAt", "Source", "woocommerce OrderID", "Age Group", "Customer Name", "Business", "Profession (LSQ)", "Profession (PG)", "Abandon Cart"] # Selection
 
@@ -368,7 +368,7 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
 
         AIExotic[TotalColName] = AIExotic[CurrentFileSumColumns].sum(axis=1).gt(0).map({True: 'Matched', False: 'Unmatched'}) # Determine duplicates
 
-        st.write(len(AIExotic[AIExotic[TotalColName] == "Matched"])) # Log duplicate count
+        st.write(f"Dupliactes Count - {len(AIExotic[AIExotic[TotalColName] == "Matched"])}") # Log duplicate count
 
         AIExotic = AIExotic[AIExotic[TotalColName] == "Unmatched"] # Keep unique only
 
@@ -509,7 +509,7 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
 
         st.dataframe(MegaSheetInfo.loc[condition, ["Date", "sheet_id"]] , hide_index=True)
 
-        if Unmatched_SlugsDF is not None:
+        if Unmatched_SlugsDF is not None or len(Unmatched_SlugsDF)>0:
           st.dataframe(Unmatched_SlugsDF,  hide_index=True)
          
         st.dataframe(FunnelCount, hide_index=True)
