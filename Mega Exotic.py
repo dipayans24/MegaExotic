@@ -572,15 +572,15 @@ else:
         col1, col2, col3, col4, col5  = st.columns(5, vertical_alignment = "center",  width="stretch") 
      
         with col1:
-           st.link_button("Open 10xStats", "https://10xstats.com/")
+           st.link_button("Open 10xStats", "https://10xstats.com/", width  = "stretch")
         with col2:
-           st.link_button("Open DirectUS", "https://directus-production-62b2.up.railway.app/admin/users/") 
+           st.link_button("Open DirectUS", "https://directus-production-62b2.up.railway.app/admin/users/", width  = "stretch") 
         with col3:
-           st.link_button("Open MEGA AC", "https://megaac.streamlit.app/") 
+           st.link_button("Open MEGA AC", "https://megaac.streamlit.app/", width  = "stretch") 
         with col4:
-           st.link_button("Open MEGA Main", "https://megamain.streamlit.app/") 
+           st.link_button("Open MEGA Main", "https://megamain.streamlit.app/", width  = "stretch") 
         with col5:
-           st.link_button("Open GdriveUpload", "https://gdriveupload.streamlit.app/")
+           st.link_button("Open GdriveUpload", "https://gdriveupload.streamlit.app/", width  = "stretch")
          
         st.code("vivek.tiwari@houseofedtech.in")
         st.code("Sasaram@#1234")
