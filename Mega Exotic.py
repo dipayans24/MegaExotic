@@ -568,7 +568,7 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
             st.success("Upload Completed!")
 
 else:
-    with st.status("Credentials", expanded=False):
+    with st.status("Links", expanded=False):
         col1, col2, col3, col4, col5  = st.columns(5, vertical_alignment = "center",  width="stretch") 
      
         with col1:
