@@ -569,13 +569,17 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
 
 else:
     with st.status("Credentials", expanded=False):
-        col1, col2, col3  = st.columns(3) 
+        col1, col2, col3, col4, col5  = st.columns(5) 
      
         with col1:
            st.link_button("Open 10xStats", "https://10xstats.com/")
         with col2:
            st.link_button("Open DirectUS", "https://directus-production-62b2.up.railway.app/admin/users/") 
         with col3:
+           st.link_button("Open MEGA AC", "https://megaac.streamlit.app/") 
+        with col4:
+           st.link_button("Open MEGA Main", "https://megamain.streamlit.app/") 
+        with col5:
            st.link_button("Open GdriveUpload", "https://gdriveupload.streamlit.app/")
          
         st.code("vivek.tiwari@houseofedtech.in")
