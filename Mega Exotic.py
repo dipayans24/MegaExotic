@@ -582,7 +582,6 @@ else:
         with col5:
            st.link_button("Open GdriveUpload", "https://gdriveupload.streamlit.app/", width  = "stretch")
          
-        st.code("vivek.tiwari@houseofedtech.in")
         st.code("Sasaram@#1234")
         
 
