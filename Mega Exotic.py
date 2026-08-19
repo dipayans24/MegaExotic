@@ -333,13 +333,16 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
         data = data.sort_values(by=["CreatedAt"], ascending=True) # Chrono sort
         data.to_csv(output_filename, index=False, sep=",") # Export
 
-    Unmatched_Slugs = pd.read_csv("UnmatchedExotic_Slugs.csv") # Reload Orphans
+  Unmatched_Slugs = pd.read_csv("UnmatchedExotic_Slugs.csv") # Reload Orphans
 
-    st.write(Unmatched_Slugs.loc[Unmatched_Slugs["Payment Slug_x"].str.len() >= 36, "Payment Slug_x"].unique())
+  if len(Unmatched_Slugs) > 0:
+     Unmatched_SlugsDF = Unmatched_Slugs.loc[Unmatched_Slugs["Payment Slug_x"].str.len() >= 36, "Payment Slug_x"].drop_duplicates()
+  else:
+     Unmatched_SlugsDF = None
    
     # @title Remove Duplicates between AI and AI BootcampPaid
-    has_ai_exotic = any(kw.startswith("AI Exotic_") for kw in FileList)
-    has_bootcamp = any(kw.startswith("AI Bootcamp_") for kw in FileList)
+  has_ai_exotic = any(kw.startswith("AI Exotic_") for kw in FileList)
+  has_bootcamp = any(kw.startswith("AI Bootcamp_") for kw in FileList)
 
   if has_ai_exotic and has_bootcamp: # Run only if both exist
         AIExoticFilePath = [i for i in FileList if i.startswith("AI Exotic_")][0] # Locate file 1
@@ -365,7 +368,7 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
 
         AIExotic[TotalColName] = AIExotic[CurrentFileSumColumns].sum(axis=1).gt(0).map({True: 'Matched', False: 'Unmatched'}) # Determine duplicates
 
-        print(len(AIExotic[AIExotic[TotalColName] == "Matched"])) # Log duplicate count
+        st.write(len(AIExotic[AIExotic[TotalColName] == "Matched"])) # Log duplicate count
 
         AIExotic = AIExotic[AIExotic[TotalColName] == "Unmatched"] # Keep unique only
 
@@ -377,9 +380,9 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
         if len(AIExotic) > 0: # Save if not empty
             output_filename = f"AI Exotic_{WSDate}.csv" # Generate name
             AIExotic.to_csv(output_filename, index=False, sep=",") # Overwrite with cleaned data
-            print(f"AI Exotic count = {len(AIExotic)}.") # Log final size
+            st.write(f"AI Exotic count = {len(AIExotic)}.") # Log final size
 
-  return FileList, ExcludedData, FunnelCount
+  return FileList, ExcludedData, FunnelCount, Unmatched_SlugsDF
 
 def updateMegaSheet(credential_Upload, sheet_id, file):
   # Authentication
@@ -502,10 +505,13 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
 
             status.update(label="Completed!",expanded=False)
 
-            FileList, ExcludedData, FunnelCount = processMEGA(Funnels,filePath,InfoDataPath,getSheets,  sheet_id, ExcludeAmount, paymentSlugs, credential_Upload)
+            FileList, ExcludedData, FunnelCount, Unmatched_SlugsDF = processMEGA(Funnels,filePath,InfoDataPath,getSheets,  sheet_id, ExcludeAmount, paymentSlugs, credential_Upload)
 
         st.dataframe(MegaSheetInfo.loc[condition, ["Date", "sheet_id"]] , hide_index=True)
 
+        if Unmatched_SlugsDF is not None:
+          st.dataframe(Unmatched_SlugsDF,  hide_index=True)
+         
         st.dataframe(FunnelCount, hide_index=True)
         
         TotalFiles = FileList+ExcludedData if IncludeExcludeData is True else FileList
