@@ -566,7 +566,21 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
                 intilizeUpload(TotalFiles, sheet_id, credential_Upload)
         else:
             st.success("Upload Completed!")
-                
-             
+
+else:
+    with st.status("Credentials", expanded=False):
+        col1, col2, col3  = st.columns(3) 
+     
+        with col1:
+           st.link_button("Open 10xStats", "https://10xstats.com/")
+        with col2:
+           st.link_button("Open DirectUS", "https://directus-production-62b2.up.railway.app/admin/users/") 
+        with col3:
+           st.link_button("Open GdriveUpload", "https://gdriveupload.streamlit.app/")
+         
+        st.code("vivek.tiwari@houseofedtech.in")
+        st.code("Sasaram@#1234")
+        
+
 
 
