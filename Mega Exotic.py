@@ -542,7 +542,7 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
                 )
     #Unmatched_Slugs.to_excel(f, sheet_name="Unmatched_Slugs", index=False)
     
-        st.info(sheet_id)
+        st.link_button(f"Go to Sheet- {sheet_id}", f"https://docs.google.com/spreadsheets/d/{sheet_id}/edit?usp=sharing", type = "secondary")
 
     if "TotalFiles" in st.session_state:
         # upload = st.button("Upload Data?", type="primary", key= "upload" )
