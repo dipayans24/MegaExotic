@@ -302,7 +302,8 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
 
     #st.write(f"{Funnel} count = {len(ExoticLeads)}.") # Log size
 
-    columns = ["PaymentFunnel" , "Payment Id", "Payment Method", "Amount", "Email", "Phone Number", "Payment Slug", "ExoticSlugs", "Status", "Tags", "CreatedAt", "Source", "woocommerce OrderID", "Age Group", "Customer Name", "Business", "Profession (LSQ)", "Profession (PG)", "Abandon Cart"] # Selection
+    columns = ["PaymentFunnel" , "Payment Id", "Payment Method", "Amount", "Email", "Phone Number", "Payment Slug", "ExoticSlugs", "Status", "Tags", "CreatedAt", "Source",
+               "woocommerce OrderID", "Age Group", "Customer Name", "Business", "Profession (LSQ)", "Profession (PG)", "Abandon Cart"] # Selection
 
     ExoticLeads = ExoticLeads[columns] # Slice columns
 
@@ -321,6 +322,10 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
     for col in ["current_profession", "experience_in_years", "age_group"]: # Coalesce results
         ExoticLeads[col] = ExoticLeads[col].combine_first(ExoticLeads[f"{col}_phone"]) # Fill missing
         ExoticLeads.drop(columns=[f"{col}_phone"], inplace=True) # Cleanup
+
+    ExoticLeads["current_profession"] = ExoticLeads[["current_profession", "Profession (PG)"]].apply(lambda x: x["Profession (PG)"] if pd.isna(x["current_profession"]) else x["current_profession"], axis=1) # Combine columns
+ 
+    ExoticLeads["age_group"] = ExoticLeads[["age_group", "Age Group"]].apply(lambda x: x["Age Group"] if pd.isna(x["age_group"]) else x["age_group"], axis=1)
 
     if len(ExoticLeads) > 0: # Save valid results
         output_filename = f"{Funnel}_{WSDate}.csv" # Set filename
