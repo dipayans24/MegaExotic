@@ -303,7 +303,7 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
     #st.write(f"{Funnel} count = {len(ExoticLeads)}.") # Log size
 
     columns = ["PaymentFunnel" , "Payment Id", "Payment Method", "Amount", "Email", "Phone Number", "Payment Slug", "ExoticSlugs", "Status", "Tags", "CreatedAt", "Source",
-               "woocommerce OrderID", "Age Group", "Customer Name", "Business", "Profession (LSQ)", "Profession (PG)", "Abandon Cart"] # Selection
+               "woocommerce OrderID", "Age Group", "Customer Name", "Business", "Profession (PG)", "Abandon Cart"] # Selection
 
     ExoticLeads = ExoticLeads[columns] # Slice columns
 
@@ -323,9 +323,9 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
         ExoticLeads[col] = ExoticLeads[col].combine_first(ExoticLeads[f"{col}_phone"]) # Fill missing
         ExoticLeads.drop(columns=[f"{col}_phone"], inplace=True) # Cleanup
 
-    ExoticLeads["current_profession"] = ExoticLeads[["current_profession", "Profession (PG)"]].apply(lambda x: x["Profession (PG)"] if pd.isna(x["current_profession"]) else x["current_profession"], axis=1) # Combine columns
- 
-    ExoticLeads["age_group"] = ExoticLeads[["age_group", "Age Group"]].apply(lambda x: x["Age Group"] if pd.isna(x["age_group"]) else x["age_group"], axis=1)
+    ExoticLeads["Profession (PG)"] = ExoticLeads[["current_profession", "Profession (PG)"]].apply(lambda x: x["Profession (PG)"] if pd.isna(x["current_profession"]) else x["current_profession"], axis=1) # Combine columns
+  
+    ExoticLeads["Age Group"] = ExoticLeads[["age_group", "Age Group"]].apply(lambda x: x["Age Group"] if pd.isna(x["age_group"]) else x["age_group"], axis=1)
 
     if len(ExoticLeads) > 0: # Save valid results
         output_filename = f"{Funnel}_{WSDate}.csv" # Set filename
@@ -400,7 +400,7 @@ def updateMegaSheet(credential_Upload, sheet_id, file):
   try:  #Gets the batchname by removing splitting from the "W" part.
         df = pd.read_csv(file, sep=",")
         columns = columns = ["CreatedAt","Customer Name", "Email", "Phone Number", "Amount", "Payment Slug", "ExoticSlugs", "Abandon Cart", 
-                             "current_profession", "experience_in_years", "age_group"]
+                              "Profession (PG)", "experience_in_years", "Age Group"]
         MainFileBatches = file.split(".")[0].replace(f"_{WSDate}", "")
         df = df[columns]
   except:
