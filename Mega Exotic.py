@@ -327,6 +327,8 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
   
     ExoticLeads["Age Group"] = ExoticLeads[["age_group", "Age Group"]].apply(lambda x: x["Age Group"] if pd.isna(x["age_group"]) else x["age_group"], axis=1)
 
+    ExoticLeads.drop(columns=["current_profession", "age_group"], inplace=True) # Cleanup
+   
     if len(ExoticLeads) > 0: # Save valid results
         output_filename = f"{Funnel}_{WSDate}.csv" # Set filename
         FileList.append(output_filename) # Log file
@@ -373,7 +375,7 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
 
         AIExotic[TotalColName] = AIExotic[CurrentFileSumColumns].sum(axis=1).gt(0).map({True: 'Matched', False: 'Unmatched'}) # Determine duplicates
 
-        st.write(f"Dupliactes Count - {len(AIExotic[AIExotic[TotalColName] == "Matched"])}") # Log duplicate count
+        st.write(f"Duplicates Count - {len(AIExotic[AIExotic[TotalColName] == "Matched"])}") # Log duplicate count
 
         AIExotic = AIExotic[AIExotic[TotalColName] == "Unmatched"] # Keep unique only
 
