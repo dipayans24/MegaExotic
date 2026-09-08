@@ -193,6 +193,12 @@ def getDates(Funnel):
 
   return startDate, endDate, excludedStartDates, excludedEndDates
 
+def get_Profession(x):
+    try:
+        return Profession[x]
+    except:
+        return x
+     
 def CountIf(Main_File, Current_File, MFCol, CFCol, filename):
 
     MainFileColCleaned = MFCol.replace(" ", "") # Clean whitespace from main column name
@@ -214,7 +220,7 @@ def CountIf(Main_File, Current_File, MFCol, CFCol, filename):
 
 #  Generate the MEGA Report
 
-def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmount,paymentSlugs,  credential_Upload):
+def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmount,paymentSlugs, Profession, credential_Upload):
   InfoData = pd.read_csv(InfoDataPath[0], sep=",", low_memory=False) # Load lead info
   InfoData.rename(columns = {"email" :"Email", "phone_number" : "Phone Number"}, inplace=True) # Standardize headers
   InfoData["Phone Number"] = InfoData["Phone Number"].astype(str).str.replace(r"\D", "", regex=True).str.strip() # Clean phone strings
@@ -324,7 +330,11 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
         ExoticLeads.drop(columns=[f"{col}_phone"], inplace=True) # Cleanup
 
     ExoticLeads["Profession (PG)"] = ExoticLeads[["current_profession", "Profession (PG)"]].apply(lambda x: x["Profession (PG)"] if pd.isna(x["current_profession"]) else x["current_profession"], axis=1) # Combine columns
-  
+
+    ExoticLeads["Profession (PG)"] = ExoticLeads["Profession (PG)"].map(get_Profession)
+
+    st.dataframe(ExoticLeads[ExoticLeads["Profession (PG)"].astype(str).fillna("empty").str.contains("opt")][["Profession (PG)"]], , hide_index=True)
+ 
     ExoticLeads["Age Group"] = ExoticLeads[["age_group", "Age Group"]].apply(lambda x: x["Age Group"] if pd.isna(x["age_group"]) else x["age_group"], axis=1)
 
     ExoticLeads.drop(columns=["current_profession", "age_group"], inplace=True) # Cleanup
@@ -501,6 +511,10 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
  
             ExcludeAmount = check_session_state("1szfXpbxy1lITxMU53e0TqlV_PjRVGv3OKTpI1wjoegk", "ExcludeAmount", "ExcludedAmount", credential_Upload, clearPreviousData) # Fetch amounts to exclude
 
+            ProfessionMapping = check_session_state("1szfXpbxy1lITxMU53e0TqlV_PjRVGv3OKTpI1wjoegk", "ProfessionMapping", "ProfessionMapping", credential_Upload, clearPreviousData) 
+            
+            Profession = ProfessionMapping.set_index("current_profession").to_dict()['Profession_PG']
+         
             EA = ExcludeAmount.groupby("Funnel").apply(lambda x:  x["Amount"].astype(float).unique()).reset_index() # Group and find unique float amounts
             EA.columns = ["Funnel", "Amount"] # Rename columns
             ExcludeAmount = EA.set_index("Funnel")["Amount"].to_dict() # Convert to lookup dictionary
@@ -512,7 +526,7 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
 
             status.update(label="Completed!",expanded=False)
 
-            FileList, ExcludedData, FunnelCount, Unmatched_SlugsDF = processMEGA(Funnels,filePath,InfoDataPath,getSheets,  sheet_id, ExcludeAmount, paymentSlugs, credential_Upload)
+            FileList, ExcludedData, FunnelCount, Unmatched_SlugsDF = processMEGA(Funnels,filePath,InfoDataPath,getSheets,  sheet_id, ExcludeAmount, paymentSlugs, Profession, credential_Upload)
 
         st.dataframe(MegaSheetInfo.loc[condition, ["Date", "sheet_id"]] , hide_index=True)
 
