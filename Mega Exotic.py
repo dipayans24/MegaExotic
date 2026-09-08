@@ -333,7 +333,7 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
 
     ExoticLeads["Profession (PG)"] = ExoticLeads["Profession (PG)"].map(get_Profession)
 
-    st.dataframe(ExoticLeads[ExoticLeads["Profession (PG)"].astype(str).fillna("empty").str.contains("opt")][["Profession (PG)"]],  hide_index=True)
+    st.dataframe(ExoticLeads[ExoticLeads["Profession (PG)"].astype(str).fillna("empty").str.contains("opt")][["Profession (PG)"]].drop_duplicates(),  hide_index=True)
  
     ExoticLeads["Age Group"] = ExoticLeads[["age_group", "Age Group"]].apply(lambda x: x["Age Group"] if pd.isna(x["age_group"]) else x["age_group"], axis=1)
 
