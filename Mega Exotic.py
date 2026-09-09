@@ -5,7 +5,7 @@ import os
 import re
 import tempfile
 import warnings
-
+from math import floor
 import gdown
 import gspread
 import pandas as pd
@@ -304,11 +304,17 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
 
     ExoticLeads.drop(columns=["EmailLC"], inplace=True) # Remove helper
 
+    #OTO NON OTO
+    Funnel_OTO_NONOTO = OTO_NONOTO[OTO_NONOTO["Funnel"] == Funnel][["OTO_NONOTO_Amount", "OTO_NONOTO"]]
+    Funnel_OTO_NONOTO["OTO_NONOTO_Amount"] = Funnel_OTO_NONOTO["OTO_NONOTO_Amount"].astype(int)
+    ExoticLeads["Amount_Round"] = ExoticLeads["Amount"].map(floor).astype(int)
+    ExoticLeads = ExoticLeads.merge(Funnel_OTO_NONOTO , left_on="Amount_Round", right_on="OTO_NONOTO_Amount", how="left").drop(columns=["Amount_Round"	, "OTO_NONOTO_Amount"])
+
     FunnelCount = pd.concat([FunnelCount, pd.DataFrame({"Funnel": [Funnel], "Count": [len(ExoticLeads)]})], axis="rows", ignore_index=True) # Update totals
 
     #st.write(f"{Funnel} count = {len(ExoticLeads)}.") # Log size
 
-    columns = ["PaymentFunnel" , "Payment Id", "Payment Method", "Amount", "Email", "Phone Number", "Payment Slug", "ExoticSlugs", "Status", "Tags", "CreatedAt", "Source",
+    columns = ["PaymentFunnel" , "Payment Id", "Payment Method", "Amount", "Email", "Phone Number", "Payment Slug", "ExoticSlugs", "Status", "OTO_NONOTO", "Tags", "CreatedAt", "Source",
                "woocommerce OrderID", "Age Group", "Customer Name", "Business", "Profession (PG)", "Abandon Cart"] # Selection
 
     ExoticLeads = ExoticLeads[columns] # Slice columns
@@ -462,19 +468,29 @@ def check_session_state(sheet_id  ,sessionVarName , sheet_name , credential_Uplo
 st.set_page_config("📊 MEGA Sheet - Exotic", layout="wide")
 st.header("📊 MEGA Sheet - Exotic", divider=True, text_alignment="center")
 WSDate =  str(st.date_input("Select the Next Sunday date",value=next_sunday()))
-credential_Upload = st.file_uploader("Upload Credentials File", type = ["json"]) 
-GdriveCredentials =  st.file_uploader("Upload GDrive File", type = ["json"]) 
-Funnels = st.multiselect(label="Select the Funnels", options=["AI Exotic", "SMAI Exotic", "PU Exotic", "AI Bootcamp"])
 
-col1, col2, col3 = st.columns(3)    
+col1, col2 = st.columns(2)
+
 with col1:
-    download = st.checkbox("Download MEGA", persist_state="page", key="downloadKey")
+     credential_Upload = st.file_uploader("Upload Credentials File", type = ["json"]) 
 
 with col2:
-    IncludeExcludeData = st.checkbox("Include Excluded Data?")
+     GdriveCredentials =  st.file_uploader("Upload GDrive File", type = ["json"]) 
+ 
+Funnels = st.multiselect(label="Select the Funnels", options=["AI Exotic", "SMAI Exotic", "PU Exotic", "AI Bootcamp"])
+
+col1, col2, col3, col4 = st.columns(4)    
+with col1:
+    download = st.checkbox("Download MEGA", persist_state="page", key="downloadKey", width = "stretch")
+
+with col2:
+    IncludeExcludeData = st.checkbox("Include Excluded Data?", width = "stretch")
 
 with col3:
-   clearPreviousData = st.checkbox("Clear Data?")
+    IncludeFunnelCount = st.checkbox("Include FunnelCount Sheet", help = "Works only, if 'Download MEGA' is checked", width = "stretch")
+ 
+with col4:
+   clearPreviousData = st.checkbox("Clear Data?", width = "stretch")
 
 if WSDate and Funnels and GdriveCredentials and credential_Upload:
     genbtn = st.button("Generate Data", type="primary", on_click=None )
@@ -507,13 +523,18 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
  
             ExcludedTimings = check_session_state("1szfXpbxy1lITxMU53e0TqlV_PjRVGv3OKTpI1wjoegk", "ExcludedTimings", "ExcludedTimings", credential_Upload, clearPreviousData)
  
-            MegaSheetInfo = check_session_state("1szfXpbxy1lITxMU53e0TqlV_PjRVGv3OKTpI1wjoegk", "MegaSheetInfo", "MegaSheetInfo", credential_Upload, clearPreviousData)
+            try:
+               MegaSheetInfo = check_session_state("1szfXpbxy1lITxMU53e0TqlV_PjRVGv3OKTpI1wjoegk", "MegaSheetInfo", "MegaSheetInfo", credential_Upload, clearPreviousData)
+            except:
+               st.error("Check the WS Date. No MEGA Sheet Found for the entered WS Date.")
  
             ExcludeAmount = check_session_state("1szfXpbxy1lITxMU53e0TqlV_PjRVGv3OKTpI1wjoegk", "ExcludeAmount", "ExcludedAmount", credential_Upload, clearPreviousData) # Fetch amounts to exclude
 
             ProfessionMapping = check_session_state("1szfXpbxy1lITxMU53e0TqlV_PjRVGv3OKTpI1wjoegk", "ProfessionMapping", "ProfessionMapping", credential_Upload, clearPreviousData) 
             
             Profession = ProfessionMapping.set_index("current_profession").to_dict()['Profession_PG']
+
+            OTO_NONOTO = check_session_state("1szfXpbxy1lITxMU53e0TqlV_PjRVGv3OKTpI1wjoegk", "OTO_NONOTO", "OTO_NONOTO", credential_Upload, clearPreviousData)  # Fetch  OTO_NONOTO Sheet
          
             EA = ExcludeAmount.groupby("Funnel").apply(lambda x:  x["Amount"].astype(float).unique()).reset_index() # Group and find unique float amounts
             EA.columns = ["Funnel", "Amount"] # Rename columns
