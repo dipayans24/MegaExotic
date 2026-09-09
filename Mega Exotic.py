@@ -572,7 +572,8 @@ if WSDate and Funnels and GdriveCredentials and credential_Upload:
                     data["CreatedAt"] = data["CreatedAt"].astype('M8[s]').dt.strftime("%Y-%m-%d %H:%M:%S")
                     data.to_excel(f, sheet_name=file.split("_")[0], index=False)
 
-                FunnelCount.to_excel(f, sheet_name="FunnelCount", index=False)
+                    if IncludeFunnelCount:
+                        FunnelCount.to_excel(f, sheet_name="FunnelCount", index=False)
 
             with open(MegaFileName, "rb") as f:
                 st.download_button(
