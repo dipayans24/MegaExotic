@@ -343,6 +343,17 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
  
     ExoticLeads["Age Group"] = ExoticLeads[["age_group", "Age Group"]].apply(lambda x: x["Age Group"] if pd.isna(x["age_group"]) else x["age_group"], axis=1)
 
+    if Funnel not in ["SMAI Exotic"]:
+       AgeGroupFilter = ["30-50", "Above 50", "30-40", "40-50"]
+       ProfessionFilter = ["IT / Software", "Operations / Manufacturing", "Finance / Banking / Insurance"]
+       experienceFilter = [ "exp_10_plus", "exp_5_10"]
+  
+       ExoticLeads.loc[((ExoticLeads["Amount"] == 0) & (ExoticLeads["Age Group"].isin(AgeGroupFilter)) &
+                   (ExoticLeads["Profession (PG)"].isin(ProfessionFilter)) &
+                   (ExoticLeads["experience_in_years"].isin(experienceFilter))), "OTO_NONOTO"]  = "OTO"
+  
+       ExoticLeads.loc[(ExoticLeads["Amount"] == 0), "OTO_NONOTO"] = ExoticLeads.loc[(ExoticLeads["Amount"] == 0), "OTO_NONOTO"].fillna("Non OTO")
+     
     ExoticLeads.drop(columns=["current_profession", "age_group"], inplace=True) # Cleanup
    
     if len(ExoticLeads) > 0: # Save valid results
