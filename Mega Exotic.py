@@ -315,7 +315,7 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
     #st.write(f"{Funnel} count = {len(ExoticLeads)}.") # Log size
 
     columns = ["PaymentFunnel" , "Payment Id", "Payment Method", "Amount", "Email", "Phone Number", "Payment Slug", "ExoticSlugs", "Status", "OTO_NONOTO", "Tags", "CreatedAt", "Source",
-               "woocommerce OrderID", "Age Group", "Customer Name", "Business", "Profession (PG)", "Abandon Cart"] # Selection
+               "woocommerce OrderID", "Age Group", "Customer Name",  "Profession (PG)", "Abandon Cart"] # Selection
 
     ExoticLeads = ExoticLeads[columns] # Slice columns
 
