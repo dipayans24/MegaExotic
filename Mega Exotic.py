@@ -309,7 +309,8 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
     Funnel_OTO_NONOTO["OTO_NONOTO_Amount"] = Funnel_OTO_NONOTO["OTO_NONOTO_Amount"].astype(int)
     ExoticLeads["Amount_Round"] = ExoticLeads["Amount"].map(floor).astype(int)
     ExoticLeads = ExoticLeads.merge(Funnel_OTO_NONOTO , left_on="Amount_Round", right_on="OTO_NONOTO_Amount", how="left").drop(columns=["Amount_Round"	, "OTO_NONOTO_Amount"])
-
+    ExoticLeads = ExoticLeads[~ExoticLeads["Amount"].between(0, 1, inclusive = "right")]
+   
     FunnelCount = pd.concat([FunnelCount, pd.DataFrame({"Funnel": [Funnel], "Count": [len(ExoticLeads)]})], axis="rows", ignore_index=True) # Update totals
 
     #st.write(f"{Funnel} count = {len(ExoticLeads)}.") # Log size
