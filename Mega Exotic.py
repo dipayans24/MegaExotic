@@ -338,7 +338,20 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
 
     ExoticLeads["Profession (PG)"] = ExoticLeads[["current_profession", "Profession (PG)"]].apply(lambda x: x["Profession (PG)"] if pd.isna(x["current_profession"]) else x["current_profession"], axis=1) # Combine columns
 
-    ExoticLeads["Profession (PG)"] = ExoticLeads["Profession (PG)"].map(get_Profession)
+    # Take the raw profession column and drop empty (NaN) cells so blanks don't show up as "unmapped"
+    raw_professions = ExoticLeads["Profession (PG)"].dropna()
+
+    # Keep only the rows whose value is NOT a key in the Profession dictionary
+    unmapped_mask = ~raw_professions.isin(Profession.keys())
+  
+    # Get the unique values from those rows and sort them alphabetically
+    unmapped_professions = pd.DataFrame(sorted(raw_professions[unmapped_mask].unique()))
+  
+    # Print the list itself
+    if len(unmapped_professions) > 0:
+      st.dataframe(unmapped_professions)
+  
+    ExoticLeads["Profession (PG)"] = ExoticLeads["Profession (PG)"].map(Profession).fillna(ExoticLeads["Profession (PG)"])
 
     st.dataframe(ExoticLeads[ExoticLeads["Profession (PG)"].astype(str).fillna("empty").str.contains("opt")][["Profession (PG)"]].drop_duplicates(),  hide_index=True)
  
