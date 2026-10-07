@@ -293,7 +293,7 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
 
     ExoticLeads.drop(columns=CurrentFileSumColumns+[CurrentDateColName, "ID"], inplace=True) # Cleanup
 
-    ExoticLeads.rename(columns={"Payment Slug_y": "ExoticSlugs", "Payment Slug_x": "Payment Slug"}, inplace=True) # Fix naming
+    ExoticLeads.rename(columns={"Payment Slug_y": "Payment Slug", "Payment Slug_x": "ExoticSlugs"}, inplace=True) # Fix naming
 
     ExoticLeads = ExoticLeads.sort_values(by=["Amount"], ascending=False) # Rank by value
 
@@ -423,7 +423,7 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
         FunnelCount.loc[(FunnelCount["Funnel"]=="AI Exotic"), "Count" ] = len(AIExotic) # Correct totals
         AIExotic.drop(columns=CurrentFileSumColumns+[TotalColName], inplace=True) # Cleanup columns
 
-        AIExotic.rename(columns={"Payment Slug_y": "ExoticSlugs", "Payment Slug_x": "Payment Slug"}, inplace=True) # Restore names
+        AIExotic.rename(columns={"Payment Slug_y": "Payment Slug", "Payment Slug_x": "ExoticSlugs"}, inplace=True) # Restore names
 
         if len(AIExotic) > 0: # Save if not empty
             output_filename = f"AI Exotic_{WSDate}.csv" # Generate name
