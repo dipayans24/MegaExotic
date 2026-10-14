@@ -315,10 +315,10 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
 
     #st.write(f"{Funnel} count = {len(ExoticLeads)}.") # Log size
 
-    columns = ["PaymentFunnel" , "Payment Id", "Payment Method", "Amount", "Email", "Phone Number", "Payment Slug", "ExoticSlugs", "Status", "OTO_NONOTO", "Tags", "CreatedAt", "Source",
-               "woocommerce OrderID", "Age Group", "Customer Name",  "Profession (PG)", "Abandon Cart"] # Selection
+    #columns = ["PaymentFunnel" , "Payment Id", "Payment Method", "Amount", "Email", "Phone Number", "Payment Slug", "ExoticSlugs", "Status", "OTO_NONOTO", "Tags", "CreatedAt", "Source",
+    #           "woocommerce OrderID", "Age Group", "Customer Name",  "Profession (PG)", "Abandon Cart"] # Selection
 
-    ExoticLeads = ExoticLeads[columns] # Slice columns
+    #ExoticLeads = ExoticLeads[columns] # Slice columns
 
     ExoticLeads = ExoticLeads.sort_values(by=["CreatedAt"], ascending=True) # Chronological sort
 
@@ -369,6 +369,11 @@ def processMEGA(Funnels, filePath, InfoDataPath, getSheets, sheet_id, ExcludeAmo
        ExoticLeads.loc[(ExoticLeads["Amount"] == 0), "OTO_NONOTO"] = ExoticLeads.loc[(ExoticLeads["Amount"] == 0), "OTO_NONOTO"].fillna("Non OTO")
      
     ExoticLeads.drop(columns=["current_profession", "age_group"], inplace=True) # Cleanup
+
+    columns = ["PaymentFunnel" , "Payment Id", "CreatedAt","Customer Name", "Email", "Phone Number", "Amount","Age Group", "Payment Slug",  
+               "Profession (PG)", "experience_in_years" ,"Abandon Cart","OTO_NONOTO", "ExoticSlugs",  "Status", "Tags",  "Source", "woocommerce OrderID"]
+   
+    ExoticLeads = ExoticLeads[columns]
    
     if len(ExoticLeads) > 0: # Save valid results
         output_filename = f"{Funnel}_{WSDate}.csv" # Set filename
